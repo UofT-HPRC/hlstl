@@ -472,3 +472,44 @@ constexpr ADDRESS_T ByteAddressableToSubWordAddressable(const ADDRESS_T address)
     return ByteAddressableToSubWordAddressable<ADDRESS_T, sizeof(ADDRESS_T)>(address);
 }
 
+/* Helper for SFINAE to work properly in some helpers below */
+template<class>
+struct sfinae_true : std::true_type
+{};
+
+/* Helper to check if an hls::stream flit or ap_axi/ap_axiu or struct has
+ * common/standard axi stream bus fields/lines
+ * Usage: has_field::field_name<field_type> returns std::true_type or std::false_type
+ * e.g.
+ * using stream_t = hls::stream< ___ >;
+ * ...
+ * using stream_has_keep_field = has_field::keep<stream_t>; // Usage would look like this - 
+ *                                                          // you could pop the result into something like std::enable_if if you wanted
+ * std::enable_if<stream_has_keep_field, ... >
+ */
+class has_field {
+    template <typename T> 
+    static auto keep() -> sfinae_true<decltype(std::declval<T>().keep)>;
+    template <typename> 
+    static auto keep() -> std::false_type;
+
+    template <typename T> 
+    static auto last() -> sfinae_true<decltype(std::declval<T>().last)>;
+    template <typename> 
+    static auto last() -> std::false_type;
+
+    template <typename T> 
+    static auto user() -> sfinae_true<decltype(std::declval<T>().user)>;
+    template <typename> 
+    static auto user() -> std::false_type;
+
+    template <typename T> 
+    static auto id() -> sfinae_true<decltype(std::declval<T>().id)>;
+    template <typename> 
+    static auto id() -> std::false_type;
+
+    template <typename T> 
+    static auto dest() -> sfinae_true<decltype(std::declval<T>().dest)>;
+    template <typename> 
+    static auto dest() -> std::false_type;
+};
