@@ -3,6 +3,29 @@ High Level Synthesis Template Library
 
 # Directory Structure
 **common/**
+<br>**common/assert.hpp** - Assertion variants and related helpers. Automatically enabled during CSIM
+Macros:
+- ASSERT(condition, message)
+  *Prints message and asserts if condition is false*
+
+- ASSERT_IF(condition_when_to_check_assertion,assertion_condition,message)
+  *When <condition_when_to_check_assertion> is true, check <assertion_condition>*
+  *and print <message> if <assertion_condition> fails*
+
+- DO_PRAGMA(x)
+  *Place a pragma on the current line*
+  *Expands macros that are specified in x*
+  
+- INFO(message)
+  *Print a message*
+  
+- UNIMPLEMENTED()
+  *Assert if this line of code is tripped*
+  
+- UNIMPLEMENTED_QUIET(messsage)
+  *If this line is tripped, print a message but don't assert*
+  
+
 <br>**common/type_manip.hpp** - Convenience helpers to manipulate, extract, and modify types
 
 Functions:
