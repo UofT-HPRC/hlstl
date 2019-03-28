@@ -69,9 +69,4 @@
   #define UNIMPLEMENTED_QUIET(messsage) {}
 #endif // DEBUG
 
-const unsigned int ROUND_TO_NEXT_POWER_OF_2(const unsigned int value);
-    
-
-#define ADDRESS_ALIGN(address, byte_alignment) (address + ((byte_alignment - (address % byte_alignment) ) % byte_alignment))
-
 #endif
