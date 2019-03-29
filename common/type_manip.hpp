@@ -387,7 +387,6 @@ inline return_type_t CreateNByteMask(const int n_bytes) {
  */
 template <typename return_type_t, int n_bytes>
 constexpr return_type_t CreateNByteMask() {
-    #pragma HLS INLINE RECURSIVE
     static_assert(sizeof(return_type_t) < 16, "Probably too big for CreateNByteMask constexpr");
     return ByteMaskMaker<(int)(n_bytes-1)>::template GetByteMask<return_type_t>();
 }
