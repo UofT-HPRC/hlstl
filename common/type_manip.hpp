@@ -168,7 +168,8 @@ const T reverse_endianess(const T &input) {
 
 
 
-/* Given a keep field on an AXI bus, calculate how many bits are active. Specializations are
+/* == Runtime ==
+ * Given a keep field on an AXI bus, calculate how many bits are active. Specializations are
  * provided (below) for more efficient implementations 
  * TARG1 - BIT_WIDTH: automatically inferred by the type passed in to "keep_field"
  * ARG1 - keep_field: the keep field from the axi bus to count the bits on
@@ -265,6 +266,32 @@ inline const ap_uint<16> CountKeepBits<16>(const ap_uint<16> keep_field)
         case 0xffff: return 16;
         default: return 0;
     };
+}
+
+/* 
+ * Convert a number in its one-hot encoding to its binary/unsigned-integer
+ * equivalent value
+ * e.g. in(0100) -> out(3)
+ *      in(0000) -> out(0)
+ *      in(1000) -> out(4)
+ * TODO: If this is too latency heavy, then consider instantiating a separate
+ *       switch-case for each bit width two remove the extra == 0 check as well
+ *       as the extra addition and subtraction needed to re-used the existing
+ *       CountKeepBits method
+ * RETURN: the binary/unsigned int equivalent value of the one-hot input, stored
+ *         in the smallest possible bitfield
+ */
+template <int N_BITS>
+auto OneHotToInteger(const ap_uint<N_BITS> const &in) -> ap_uint<BitsNeededToStore(N_BITS)> {
+    // One-hot => power of two. 2^n -1 is a bit mask
+    return (in == 0) ? 0 : CountKeepBits(in-1) + 1;
+}
+
+/* Specialization of OneHotToInteger for ap_int<> types */
+template <int N_BITS>
+auto OneHotToInteger(const ap_int<N_BITS> const &in) -> ap_uint<BitsNeededToStore(N_BITS)> {
+    // One-hot => power of two. 2^n -1 is a bit mask
+    return OneHotToInteger((ap_uint<N_BITS>)in);
 }
 
 
@@ -512,3 +539,5 @@ class has_field {
     template <typename> 
     static auto dest() -> std::false_type;
 };
+
+#endif
