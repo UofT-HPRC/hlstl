@@ -83,7 +83,6 @@ void axis_broadcaster (I_STREAM_T &s_axis, O_STREAM_T &...output_streams)
     #pragma HLS PIPELINE II=1
     #pragma HLS INLINE OFF
     #pragma HLS INLINE RECURSIVE
-    #pragma HLS ARRAY_PARTITION VARIABLE=m_axis
     
     auto flit_in = s_axis.read();
     broadcast_flit_over_axis (flit_in, output_streams...);
